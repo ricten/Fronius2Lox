@@ -12,7 +12,7 @@
 ^ Quellcode | [[https://github.com/ricten/Fronius2Lox|github.com/ricten/Fronius2Lox]] (MIT-Lizenz) |
 ^ Beschreibung | Liest Fronius-Wechselrichter (Gen24, Symo, Primo …) über die lokale Fronius Solar API aus und veröffentlicht die Werte per MQTT. Über das LoxBerry-MQTT-Gateway gelangen sie an den Loxone Miniserver. Ersatz für den ioBroker-Adapter fronius. |
 ^ Sprachen | DE |
-^ Diskussion | FORUM-LINK-EINTRAGEN |
+^ Diskussion | https://www.loxforum.com/forum/projektforen/loxberry/plugins/494959-loxberry-plugin-fronius2lox-%E2%80%93-fronius-solar-api-per-mqtt-an-den-miniserver |
 
 ----
 
