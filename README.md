@@ -16,6 +16,8 @@ Alle in der offiziellen Solar-API-Dokumentation beschriebenen Werte werden über
 4. Plugin öffnen, Reiter „Einstellungen“: IP des Wechselrichters eintragen, **Aktiv** anhaken, speichern.
 5. Reiter „Test“ → „Sofort abrufen“ und „Selbstprüfung“. Werte erscheinen unter `fronius/<name>/*`.
 
+**Immer das neueste Release:** `https://github.com/ricten/Fronius2Lox/releases/latest/download/fronius2lox.zip` (ZIP ohne Version im Namen). **Automatische Updates:** Neue Installationen stehen in der Plugin-Verwaltung auf „Releases“, LoxBerry prüft täglich die `release.cfg` im Repository und installiert neuere Versionen selbst (Details: [docs/wiki/Installation.md](docs/wiki/Installation.md)).
+
 ## Topics (Auszug)
 `fronius/wr1/pv_w`, `haus_w`, `netz_w` (+ Bezug / − Einspeisung), `batterie_w` (+ Laden / − Entladen), `batterie_soc`, `energie_tag_wh`, `wr/1/…`, `zaehler/0/…`, `speicher/0/…`, `ohmpilot/0/…`, `verbunden`, `schlaeft`, `fronius/status/ok|zaehler|ts`.
 Vollständige Liste: [docs/wiki/MQTT-Topics.md](docs/wiki/MQTT-Topics.md).

@@ -739,7 +739,10 @@ foreach (['einstellungen', 'mqtt', 'loxone', 'test', 'logs'] as $tab) {
     check("UI $tab: genau ein aktiver Eintrag, und zwar dieser", array_values(array_filter($nav, fn($n) => !empty($n['active'])))[0]['URL'] ?? null, '?tab=' . $tab);
     check("UI $tab: nur ein aktiver Eintrag", count(array_filter($nav, fn($n) => !empty($n['active']))), 1);
     check("UI $tab: kein eigener Tab-Block mehr", str_contains($o, '-tabs"'), false);
+    check("UI $tab: Design System (nojqm gesetzt, lb-content, kein jQuery-Mobile-Rest)", [str_contains($o, '<!--NOJQM:1-->'), str_contains($o, 'class="lb-content'), str_contains($o, 'data-role='), str_contains($o, 'data-ajax=')], [true, true, false, false]);
 }
+[$o] = $uiPage('einstellungen');
+check('UI Einstellungen: Schalter, Eingabefelder und Speichern-Knopf im Design System', [str_contains($o, 'class="lb-toggle"'), str_contains($o, 'class="lb-input'), str_contains($o, 'lb-btn lb-btn-primary'), str_contains($o, 'name="nacht_aktiv"'), str_contains($o, 'name="modbus_aktiv"'), str_contains($o, 'name="geraet[0][aktiv]"'), str_contains($o, 'name="intervall"')], [true, true, true, true, true, true, true]);
 [$o] = $uiPage('mqtt', ['STUB_UDP' => '12345']);
 check('UI mqtt: Gateway V2, Abo fehlt, mit Anleitung', str_contains($o, 'Gateway V2: Das Abo „fronius/#“ fehlt'), true);
 check('UI mqtt: nichts abonniert = rotes Feld', str_contains($o, 'gw-abo-fehler') && !str_contains($o, 'gw-abo-ok'), true);

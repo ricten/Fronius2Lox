@@ -5,7 +5,7 @@ class LBWeb
     public static function lbheader($title = '', $helplink = '', $helptemplate = '', $nojqm = false): void
     {
         global $navbar;
-        echo "<!--HEADER:$title-->\n<!--NAVBAR:" . json_encode($navbar ?? [], JSON_UNESCAPED_UNICODE) . "-->\n";
+        echo "<!--HEADER:$title-->\n<!--NOJQM:" . ($nojqm ? '1' : '0') . "-->\n<!--NAVBAR:" . json_encode($navbar ?? [], JSON_UNESCAPED_UNICODE) . "-->\n";
     }
 
     public static function lbfooter(): void

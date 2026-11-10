@@ -17,6 +17,8 @@ bash build.sh
 
 Ergebnis: `fronius2lox-<version>.zip` (enthält nur den Inhalt von `fronius2lox/` plus die gemeinsamen Klassen, keine Tests und keine Doku). Fertige ZIPs gibt es unter den GitHub-Releases des Repos.
 
+**Immer das neueste Release:** Der Link `https://github.com/ricten/Fronius2Lox/releases/latest/download/fronius2lox.zip` lädt das ZIP des jeweils letzten Releases (ohne Version im Dateinamen). Er lässt sich in der LoxBerry-Plugin-Verwaltung beim Installieren von einer Internetadresse eintragen und muss nach einem neuen Release nicht angepasst werden.
+
 ## Auf dem LoxBerry installieren
 
 1. LoxBerry-Oberfläche → **Plugin-Verwaltung** → **Plugin installieren**.
@@ -41,6 +43,15 @@ Das Plugin ändert nichts außerhalb seiner eigenen Ordner.
 ## Update
 
 Beim Update sichern `preupgrade.sh`/`postupgrade.sh` **Konfiguration und Daten** und spielen sie zurück. Neue Konfigurationsschlüssel ergänzt der Dienst beim Laden automatisch mit Standardwerten.
+
+### Automatische Updates
+
+Ab Version 0.5.0 nutzt Fronius2Lox die Update-Funktion der LoxBerry-Plugin-Verwaltung. In der `plugin.cfg` steht der Verweis auf die Datei `release.cfg` im GitHub-Repository (`ricten/Fronius2Lox`, Zweig `main`). LoxBerry prüft sie täglich und vergleicht die dort eingetragene Version mit der installierten.
+
+- **Neue Installationen** stehen in der Plugin-Verwaltung bei „Automatische Updates“ auf **Releases**: eine neuere Version wird selbst heruntergeladen und installiert.
+- **Schon installierte Plugins** bekommen den Verweis erst, wenn einmal von Hand (ZIP oder Link) mindestens Version 0.5.0 installiert wurde. Danach lässt sich die Einstellung in der Plugin-Verwaltung ändern: *Aus*, *Benachrichtigen* oder *Releases*.
+- Konfiguration und Daten bleiben wie bei jedem Update erhalten (siehe oben).
+- Die `release.cfg` zeigt immer auf das ZIP der jeweils letzten Version; sie wird erst nach dem GitHub-Release angepasst, damit nie auf ein fehlendes ZIP verwiesen wird.
 
 ## Deinstallation
 

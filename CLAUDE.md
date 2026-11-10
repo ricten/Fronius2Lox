@@ -34,6 +34,14 @@ Ersetzt den ioBroker-Adapter `fronius`. Fragt die Fronius Solar API v1 (JSON üb
 - Dienst lokal: `FRO_DEV_DIR=<Ordner mit fronius.json> FRO_DEV_MQTT=127.0.0.1:18832 php fronius2lox/bin/froniusd.php` (Fake-Server: `php tests/fake_fronius.php 18951 <Ordner>`, `php tests/fake_mqtt.php 18832 <Ordner>`).
 - Build: `bash build.sh` → `fronius2lox-<version>.zip`.
 
+## Release-Ablauf (Autoupdate über `release.cfg`)
+1. Version in `plugin.cfg` und `AppVersion.php` erhöhen, Eintrag in `CHANGELOG.md`, `bash build.sh` (baut das ZIP).
+2. Committen (ohne `release.cfg`), pushen, Tag `vX.Y.Z` setzen, `gh release create vX.Y.Z fronius2lox-X.Y.Z.zip fronius2lox.zip …` (beide ZIPs anhängen: `bash build.sh` erzeugt neben dem ZIP mit Version ein gleiches **ZIP ohne Version**, damit der Link `https://github.com/ricten/Fronius2Lox/releases/latest/download/fronius2lox.zip` immer das neueste Release liefert).
+3. **Danach** `bash build.sh release-cfg`, `release.cfg` committen und pushen. Erst dann sehen die Installationen das Update. Die Datei darf nie auf eine Version zeigen, deren ZIP noch nicht existiert.
+- **`release.cfg` nur nach Rücksprache mit Rico anlegen oder ändern** (auch `bash build.sh release-cfg` nicht ohne Freigabe): Sie löst bei allen Installationen mit aktivierten Auto-Updates sofort ein Update aus.
+- `plugin.cfg` enthält `AUTOMATIC_UPDATES=true` und `RELEASECFG=https://raw.githubusercontent.com/ricten/Fronius2Lox/main/release.cfg` (`PRERELEASECFG` leer). LoxBerry lädt die `release.cfg` per curl (folgt Weiterleitungen) und vergleicht `VERSION` mit der installierten Version. `true` schaltet bei **neuen** Installationen die automatischen Release-Updates ein; schon installierte Versionen bekommen den Verweis erst durch die Neuinstallation von 0.5.0.
+- Weboberfläche: LoxBerry Design System (`lb-*`, `lbheader(…, true)`), kein jQuery Mobile; Farben nur über `var(--lb-…, Rückfall)`.
+
 ## Vorgaben aus dem LoxBerry-Entwicklerwiki (Stand 2026-11-10)
 - `plugin.cfg`: `CUSTOM_LOGLEVELS=true` schaltet die Loglevel-Auswahl frei (der Installer liest nur diesen Schlüssel; `LOGLEVELS_ENABLED` gibt es nicht). Version dreiteilig ohne Buchstaben, `ARCHITECTURE` mit Werten immer in Anführungszeichen, `TITLE` höchstens 25 Zeichen.
 - **Gateway-Abo:** `config/mqtt_subscriptions.cfg` ist **zeilenweise** (ein Topic je Zeile, z. B. `fronius/#`), kein INI-Format. Nur das Gateway V1 (Perl) liest sie; das **Gateway V2 (Python) liest sie nicht** (LoxBerry-Quellcode `sbin/mqtt_gateway.py`). Die Oberfläche prüft deshalb `config/system/subscriptions.json` (`GatewayInfo::subscription`) und sagt dem Benutzer, dass er das Abo im Gateway eintragen muss. Nie behaupten, das Plugin trage das Abo selbst ein.

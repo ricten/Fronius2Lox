@@ -18,6 +18,13 @@ function h($s): string
     return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
 }
 
+/** Schalter im Stil des LoxBerry Design Systems (Checkbox mit lb-toggle); $text darf feste HTML-Auszeichnung enthalten. */
+function schalter(string $name, bool $an, string $text = ''): string
+{
+    return '<label class="lb-toggle"><input type="checkbox" name="' . h($name) . '" value="1"' . ($an ? ' checked' : '') . '><span class="lb-toggle-slider"></span></label>'
+        . ($text !== '' ? ' <span class="fro-schalter-text">' . $text . '</span>' : '');
+}
+
 $paths = Paths::detect();
 $fro = FroniusConfig::load($paths->config);
 $tab = $_GET['tab'] ?? 'einstellungen';
@@ -64,58 +71,66 @@ foreach ($tabs as $k => $t) {
 // UDP-Port des Gateways für Befehle aus Loxone (einstellbar, steht in den MQTT-Verbindungsdaten)
 $udp = GatewayInfo::udpPort(function_exists('mqtt_connectiondetails') ? mqtt_connectiondetails() : null, GatewayInfo::general());
 
-LBWeb::lbheader('Fronius2Lox ' . AppVersion::CURRENT, '', '');
+// 4. Parameter true: LoxBerry Design System (lb-*-Klassen) statt jQuery Mobile
+LBWeb::lbheader('Fronius2Lox ' . AppVersion::CURRENT, '', '', true);
 ?>
 <style>
- .fro table { border-collapse:collapse; margin:8px 0 16px 0; }
- .fro th, .fro td { border:1px solid #bbb; padding:4px 8px; text-align:left; vertical-align:top; }
- .fro pre { background:#f4f4f4; color:#222; padding:8px; overflow:auto; max-height:420px; }
- .fro .ok { color:#2a8a2a; font-weight:bold; } .fro .fehler { color:#c0392b; font-weight:bold; }
- .fro .hinweis { color:#666; font-size:90%; }
+ .fro pre { background:var(--lb-gray-100,#f4f4f4); color:var(--lb-text,#222); padding:8px; overflow:auto; max-height:420px; border-radius:var(--lb-radius-sm,4px); }
+ .fro .ok { color:var(--lb-success,#2a8a2a); font-weight:bold; } .fro .fehler { color:var(--lb-danger,#c0392b); font-weight:bold; }
+ .fro .hinweis { color:var(--lb-text-muted,#666); font-size:90%; }
+ .fro .lb-card { margin:12px 0; padding:4px 16px 12px 16px; }
+ .fro .fro-opt { margin:6px 0; display:flex; align-items:flex-start; gap:8px; }
+ .fro .fro-opt .lb-toggle { flex:none; }
+ .fro .lb-table td .lb-input, .fro .lb-table td .lb-select { width:auto; max-width:100%; }
+ .fro .fro-schmal { width:90px !important; } .fro .fro-mittel { width:150px !important; }
  .fro-led { display:inline-block; width:18px; height:18px; border-radius:3px; vertical-align:middle; border:1px solid rgba(0,0,0,.35); }
- .fro-led-ok { background:#2ecc40; } .fro-led-fehler { background:#e74c3c; } .fro-led-aus { background:#bbb; }
- .fro input.fro-chk { display:inline-block; position:static; opacity:1; width:22px; height:22px; margin:4px; }
+ .fro-led-ok { background:var(--lb-success,#2ecc40); } .fro-led-fehler { background:var(--lb-danger,#e74c3c); } .fro-led-aus { background:var(--lb-gray-400,#bbb); }
 </style>
-<div class="fro">
-<?php foreach ($meldungen as $m) { echo '<p class="' . (str_starts_with($m, 'FEHLER') ? 'fehler' : 'ok') . '">' . h($m) . '</p>'; } ?>
+<div class="lb-content fro">
+<?php foreach ($meldungen as $m) { echo '<div class="lb-callout' . (str_starts_with($m, 'FEHLER') ? ' lb-callout-warning' : '') . '"><span class="' . (str_starts_with($m, 'FEHLER') ? 'fehler' : 'ok') . '">' . h($m) . '</span></div>'; } ?>
 
 <?php if ($tab === 'einstellungen') { ?>
-<form method="post" action="<?= $basis ?>einstellungen" data-ajax="false">
+<form method="post" action="<?= $basis ?>einstellungen">
 <input type="hidden" name="token" value="<?= h($token) ?>">
 
+<div class="lb-card">
 <h3>Allgemein</h3>
-<p>Abfrageintervall (Sekunden, 5–300):
-<input type="number" name="intervall" min="5" max="300" value="<?= (int)$fro['intervall'] ?>"></p>
+<div class="lb-form-row"><label class="lb-form-label" for="intervall">Abfrageintervall (Sekunden, 5–300)</label>
+<div class="lb-form-field"><input class="lb-input fro-schmal" type="number" id="intervall" name="intervall" min="5" max="300" value="<?= (int)$fro['intervall'] ?>"></div></div>
 <p class="hinweis">Fronius verlangt mindestens 4 Sekunden zwischen zwei Abfragen. Selten ändernde Daten (Geräteliste, Stammdaten, Extremwerte) holt das Plugin nur alle 60 s, das Fehlerprotokoll alle 5 Minuten.</p>
-<p>
-<label><input type="checkbox" data-role="none" class="fro-chk" name="wechselrichter" value="1" <?= $fro['wechselrichter'] ? 'checked' : '' ?>> Details je Wechselrichter (Spannung, Strom, Frequenz, Status, Phasenwerte, Extremwerte)</label><br>
-<label><input type="checkbox" data-role="none" class="fro-chk" name="zaehler" value="1" <?= $fro['zaehler'] ? 'checked' : '' ?>> Smart Meter (Phasenwerte, Zählerstände)</label><br>
-<label><input type="checkbox" data-role="none" class="fro-chk" name="speicher" value="1" <?= $fro['speicher'] ? 'checked' : '' ?>> Batteriespeicher (Ladestand, Temperatur, Kapazität, Module)</label><br>
-<label><input type="checkbox" data-role="none" class="fro-chk" name="weitere" value="1" <?= $fro['weitere'] ? 'checked' : '' ?>> Weitere Geräte: OhmPilot, Sensorkarte, String Control</label><br>
-<label><input type="checkbox" data-role="none" class="fro-chk" name="logger" value="1" <?= $fro['logger'] ? 'checked' : '' ?>> Datenlogger: Version, Zeitzone, LEDs, API-Version</label><br>
-<label><input type="checkbox" data-role="none" class="fro-chk" name="archiv" value="1" <?= $fro['archiv'] ? 'checked' : '' ?>> Archiv: Fehler- und Ereignisprotokoll des Tages sowie Spannung/Strom/Leistung von String 1 und 2 (Datenlogger-Werte, nicht bei GEN24)</label><br>
-<label><input type="checkbox" data-role="none" class="fro-chk" name="rohwerte" value="1" <?= $fro['rohwerte'] ? 'checked' : '' ?>> Rohwerte: alle Felder der Antworten zusätzlich unter <code>fronius/&lt;name&gt;/raw/…</code></label></p>
+<div class="fro-opt"><?= schalter('wechselrichter', (bool)($fro['wechselrichter']), 'Details je Wechselrichter (Spannung, Strom, Frequenz, Status, Phasenwerte, Extremwerte)') ?></div>
+<div class="fro-opt"><?= schalter('zaehler', (bool)($fro['zaehler']), 'Smart Meter (Phasenwerte, Zählerstände)') ?></div>
+<div class="fro-opt"><?= schalter('speicher', (bool)($fro['speicher']), 'Batteriespeicher (Ladestand, Temperatur, Kapazität, Module)') ?></div>
+<div class="fro-opt"><?= schalter('weitere', (bool)($fro['weitere']), 'Weitere Geräte: OhmPilot, Sensorkarte, String Control') ?></div>
+<div class="fro-opt"><?= schalter('logger', (bool)($fro['logger']), 'Datenlogger: Version, Zeitzone, LEDs, API-Version') ?></div>
+<div class="fro-opt"><?= schalter('archiv', (bool)($fro['archiv']), 'Archiv: Fehler- und Ereignisprotokoll des Tages sowie Spannung/Strom/Leistung von String 1 und 2 (Datenlogger-Werte, nicht bei GEN24)') ?></div>
+<div class="fro-opt"><?= schalter('rohwerte', (bool)($fro['rohwerte']), 'Rohwerte: alle Felder der Antworten zusätzlich unter <code>fronius/&lt;name&gt;/raw/…</code>') ?></div>
 <p class="hinweis">Welche Geräte es gibt, fragt das Plugin beim Wechselrichter selbst ab (GetActiveDeviceInfo). Zähler, Speicher, OhmPilot usw. werden nur abgefragt, wenn der Wechselrichter sie meldet. Rohwerte werden nur bei Änderung gesendet.</p>
+</div>
 
+<div class="lb-card">
 <h3>Nachtbetrieb</h3>
-<p><label><input type="checkbox" data-role="none" class="fro-chk" name="nacht_aktiv" value="1" <?= $fro['nacht']['aktiv'] ? 'checked' : '' ?>>
- Der Wechselrichter schaltet nachts ab: Nichterreichbarkeit nach geringer PV-Leistung ist normal, kein Fehler</label></p>
-<table>
-<tr><th>Geringe Leistung bis</th><td><input type="number" name="nacht_schwelle" min="0" max="100000" value="<?= (int)$fro['nacht']['schwelle_w'] ?>" style="width:90px"> W</td></tr>
-<tr><th>Breitengrad / Längengrad (optional)</th><td><input type="text" name="nacht_breite" value="<?= h($fro['nacht']['breite']) ?>" size="9" placeholder="z. B. 51.0"> / <input type="text" name="nacht_laenge" value="<?= h($fro['nacht']['laenge']) ?>" size="9" placeholder="z. B. 9.0"></td></tr>
-</table>
+<div class="fro-opt"><?= schalter('nacht_aktiv', (bool)($fro['nacht']['aktiv']), 'Der Wechselrichter schaltet nachts ab: Nichterreichbarkeit nach geringer PV-Leistung ist normal, kein Fehler') ?></div>
+<div class="lb-table-scroll"><table class="lb-table">
+<tr><th>Geringe Leistung bis</th><td><input class="lb-input fro-schmal" type="number" name="nacht_schwelle" min="0" max="100000" value="<?= (int)$fro['nacht']['schwelle_w'] ?>"> W</td></tr>
+<tr><th>Breitengrad / Längengrad (optional)</th><td><input class="lb-input fro-mittel" type="text" name="nacht_breite" value="<?= h($fro['nacht']['breite']) ?>" placeholder="z. B. 51.0"> / <input class="lb-input fro-mittel" type="text" name="nacht_laenge" value="<?= h($fro['nacht']['laenge']) ?>" placeholder="z. B. 9.0"></td></tr>
+</table></div>
 <p class="hinweis">Bei Fronius Symo/Primo hängt der Datamanager am Wechselrichter und ist nachts ohne Strom. Fällt das Gerät aus, nachdem die PV-Leistung zuletzt höchstens den eingestellten Wert hatte (abends), gilt das als Nacht:
 <code>fronius/&lt;name&gt;/schlaeft</code> = 1, <code>pv_w</code> = 0, <code>status/ok</code> bleibt 1. Fällt es dagegen bei hoher Leistung aus (tagsüber), ist es ein Fehler.
 Die Koordinaten brauchen Sie nur, damit auch nach einem Neustart des Plugins mitten in der Nacht der Ausfall als normal erkannt wird (Sonnenstand mit 90 Minuten Toleranz).</p>
+</div>
 
+<div class="lb-card">
 <h3>MPP-Tracker (Modbus TCP)</h3>
-<p><label><input type="checkbox" data-role="none" class="fro-chk" name="modbus_aktiv" value="1" <?= $fro['modbus']['aktiv'] ? 'checked' : '' ?>>
- Spannung, Strom und Leistung je MPP-Tracker (String) per Modbus TCP lesen</label>
- &nbsp; Port <input type="number" name="modbus_port" min="1" max="65535" value="<?= (int)$fro['modbus']['port'] ?>" style="width:80px"></p>
+<div class="fro-opt"><?= schalter('modbus_aktiv', (bool)($fro['modbus']['aktiv']), 'Spannung, Strom und Leistung je MPP-Tracker (String) per Modbus TCP lesen') ?></div>
+<div class="lb-form-row"><label class="lb-form-label" for="modbus_port">Port</label>
+<div class="lb-form-field"><input class="lb-input fro-schmal" type="number" id="modbus_port" name="modbus_port" min="1" max="65535" value="<?= (int)$fro['modbus']['port'] ?>"></div></div>
 <p class="hinweis">Die Solar API kennt Tracker 2 bis 4 nur beim GEN24/Tauro/Verto. Beim Symo steht die Aufteilung auf die Tracker nur in der Modbus-Schnittstelle des Datamanagers (SunSpec-Modell 160, nur lesend). Dort muss Modbus eingeschaltet sein: Weboberfläche des Datamanagers → <b>Einstellungen → Modbus</b>: Datenausgabe über Modbus <b>tcp</b>, SunSpec-Modelltyp <b>int + SF</b>, Port 502. Die Unit-ID ist die Wechselrichter-Nummer (beim ersten Wechselrichter 1). Die Werte erscheinen als <code>wr/&lt;Nr&gt;/spannung_dc_v</code>, <code>strom_dc_a</code>, <code>leistung_dc_w</code> (Tracker 1) und <code>…_dc_2_…</code> (Tracker 2) und ersetzen dann die DC-Werte der Solar API. <code>wr/&lt;Nr&gt;/modbus_ok</code> zeigt, ob die Abfrage klappt; Fehlergründe stehen im Log.</p>
+</div>
 
+<div class="lb-card">
 <h3>Wechselrichter</h3>
-<table>
+<div class="lb-table-scroll"><table class="lb-table">
 <tr><th>Status</th><th>Aktiv</th><th>Name im Topic</th><th>Host/IP</th><th>Port</th></tr>
 <?php foreach ($fro['geraete'] as $i => $g) { ?>
 <tr>
@@ -130,18 +145,19 @@ Die Koordinaten brauchen Sie nur, damit auch nach einem Neustart des Plugins mit
     }
     ?>
  <span class="fro-led fro-led-<?= $led ?>" title="<?= h($tip) ?>"></span> <span class="hinweis"><?= h($tip) ?></span></td>
- <td><input type="checkbox" data-role="none" class="fro-chk" name="geraet[<?= $i ?>][aktiv]" value="1" <?= !empty($g['aktiv']) ? 'checked' : '' ?>></td>
- <td><input type="text" name="geraet[<?= $i ?>][alias]" value="<?= h($g['alias']) ?>" size="10" placeholder="wr<?= $i + 1 ?>"></td>
- <td><input type="text" name="geraet[<?= $i ?>][host]" value="<?= h($g['host']) ?>" size="18"></td>
- <td><input type="number" name="geraet[<?= $i ?>][port]" value="<?= (int)$g['port'] ?>" style="width:80px"></td>
+ <td><?= schalter('geraet[' . $i . '][aktiv]', !empty($g['aktiv'])) ?></td>
+ <td><input class="lb-input fro-mittel" type="text" name="geraet[<?= $i ?>][alias]" value="<?= h($g['alias']) ?>" placeholder="wr<?= $i + 1 ?>"></td>
+ <td><input class="lb-input fro-mittel" type="text" name="geraet[<?= $i ?>][host]" value="<?= h($g['host']) ?>"></td>
+ <td><input class="lb-input fro-schmal" type="number" name="geraet[<?= $i ?>][port]" value="<?= (int)$g['port'] ?>"></td>
 </tr>
 <?php } ?>
-</table>
+</table></div>
 <p class="hinweis">Bis zu vier Fronius-Systeme (je ein Wechselrichter oder Datamanager im Netz). Der Name steckt im Topic (<code>fronius/&lt;name&gt;/…</code>; nur a–z, 0–9, _ und -), leer = wr1, wr2 …
 <b>Bei Gen24 muss die Solar API freigeschaltet sein:</b> Weboberfläche des Wechselrichters → Kommunikation → Solar API → „Solar API aktivieren“. Ältere Geräte (Symo, Primo mit Datamanager) liefern sie von Haus aus.
 Bei mehreren Wechselrichtern an <i>einem</i> Datamanager genügt dessen Adresse; alle Geräte erscheinen dann unter <code>wr/&lt;Nr&gt;/…</code>.</p>
+</div>
 
-<p><button type="submit" name="aktion" value="speichern" data-ajax="false">Speichern</button></p>
+<p><button class="lb-btn lb-btn-primary" type="submit" name="aktion" value="speichern">Speichern</button></p>
 </form>
 
 <?php } elseif ($tab === 'mqtt') {
@@ -150,7 +166,7 @@ Bei mehreren Wechselrichtern an <i>einem</i> Datamanager genügt dessen Adresse;
     $gw = GatewayInfo::subscription('fronius/#', GatewayInfo::general());
     ?>
 <h3>MQTT</h3>
-<table>
+<div class="lb-table-scroll"><table class="lb-table">
 <tr><th><?= $own !== null ? 'Broker (eigener, aus den Plugin-Einstellungen)' : 'Broker (aus der LoxBerry-Konfiguration)' ?></th><td><?= h(($d['brokerhost'] ?? '?') . ':' . ($d['brokerport'] ?? '?')) ?></td></tr>
 <tr><th>Gateway-Abo</th><td><?= GatewayInfo::feldHtml($gw, 'fronius/#') ?></td></tr>
 <tr><th>Dienst</th><td><?= $laeuft ? '<span class="ok">läuft</span> (Version ' . h($status['version'] ?? '?') . ')' : '<span class="fehler">läuft nicht</span> (der Wächter startet ihn spätestens nach einer Minute)' ?></td></tr>
@@ -158,24 +174,23 @@ Bei mehreren Wechselrichtern an <i>einem</i> Datamanager genügt dessen Adresse;
 <tr><th>status/ok</th><td><?= isset($status['ok']) ? (int)$status['ok'] : '-' ?></td></tr>
 <tr><th>status/zaehler</th><td><?= isset($status['zaehler']) ? (int)$status['zaehler'] : '-' ?></td></tr>
 <tr><th>status/ts</th><td><?= !empty($status['ts']) ? h(date('d.m.Y H:i:s', (int)$status['ts'])) : '-' ?></td></tr>
-</table>
+</table></div>
 <?php foreach (($status['geraete'] ?? []) as $a => $r) {
     echo '<p>' . h($a) . ': ' . (!empty($r['schlaeft']) ? '<span class="ok">abgeschaltet (Nacht)</span> - kein Fehler' : (!empty($r['ok']) ? '<span class="ok">erreichbar</span> (' . (int)($r['werte'] ?? 0) . ' Werte)' : '<span class="fehler">' . h($r['error'] ?? 'Fehler') . '</span>')) . '</p>';
 } ?>
-<form method="post" action="<?= $basis ?>mqtt" data-ajax="false">
+<form method="post" action="<?= $basis ?>mqtt">
 <input type="hidden" name="token" value="<?= h($token) ?>">
 <h3>MQTT-Broker</h3>
 <?php $mq = $fro['mqtt']; ?>
-<p><label><input type="checkbox" name="mqtt[eigener_broker]" value="1" <?= !empty($mq['eigener_broker']) ? 'checked' : '' ?>>
- Eigenen MQTT-Broker verwenden (statt dem Broker des LoxBerry)</label></p>
-<table>
-<tr><th>Host/IP</th><td><input type="text" name="mqtt[host]" value="<?= h($mq['host']) ?>" size="24"></td>
-<th>Port</th><td><input type="number" name="mqtt[port]" value="<?= (int)$mq['port'] ?>" style="width:90px"></td></tr>
-<tr><th>Benutzer</th><td><input type="text" name="mqtt[benutzer]" value="<?= h($mq['benutzer']) ?>" size="16" autocomplete="off"></td>
-<th>Passwort</th><td><input type="password" name="mqtt[passwort]" value="" size="16" autocomplete="new-password" placeholder="<?= $mq['passwort'] !== '' ? '(gesetzt)' : '' ?>"></td></tr>
-</table>
+<div class="fro-opt"><?= schalter('mqtt[eigener_broker]', !empty($mq['eigener_broker']), 'Eigenen MQTT-Broker verwenden (statt dem Broker des LoxBerry)') ?></div>
+<div class="lb-table-scroll"><table class="lb-table">
+<tr><th>Host/IP</th><td><input class="lb-input" type="text" name="mqtt[host]" value="<?= h($mq['host']) ?>"></td>
+<th>Port</th><td><input class="lb-input fro-schmal" type="number" name="mqtt[port]" value="<?= (int)$mq['port'] ?>"></td></tr>
+<tr><th>Benutzer</th><td><input class="lb-input fro-mittel" type="text" name="mqtt[benutzer]" value="<?= h($mq['benutzer']) ?>" autocomplete="off"></td>
+<th>Passwort</th><td><input class="lb-input fro-mittel" type="password" name="mqtt[passwort]" value="" autocomplete="new-password" placeholder="<?= $mq['passwort'] !== '' ? '(gesetzt)' : '' ?>"></td></tr>
+</table></div>
 <p class="hinweis">Ohne Haken verwendet das Plugin den MQTT-Broker aus der LoxBerry-Konfiguration (empfohlen, Zugangsdaten verwaltet LoxBerry). Mit eigenem Broker erreichen die Werte den Miniserver nur, wenn das MQTT-Gateway diesen Broker abonniert. Ein leeres Passwortfeld behält das gespeicherte Passwort.</p>
-<p><button type="submit" name="aktion" value="speichern" data-ajax="false">Speichern</button></p>
+<p><button class="lb-btn lb-btn-primary" type="submit" name="aktion" value="speichern">Speichern</button></p>
 </form>
 
 <?php } elseif ($tab === 'loxone') {
@@ -257,7 +272,7 @@ Bei mehreren Wechselrichtern an <i>einem</i> Datamanager genügt dessen Adresse;
 <h3>Einbindung in Loxone</h3>
 <p>Der Eingangsname ist das Topic mit _ statt /. Die Werte kommen über das MQTT-Gateway (Abo fronius/#) als virtuelle Eingänge, z. B. <code>fronius_wr1_pv_w</code>.
 Werte ohne Inhalt (z. B. Smart Meter fehlt) werden nicht gesendet. Mit der Option <i>Rohwerte</i> kommen alle Felder der Antworten zusätzlich unter <code>fronius/&lt;name&gt;/raw/…</code>.</p>
-<table>
+<div class="lb-table-scroll"><table class="lb-table">
 <tr><th>Gruppe</th><th>Topic</th><th>Eingangsname</th><th>Einheit</th><th>Bedeutung</th><th>retained</th></tr>
 <?php
 $einzel = fn(string $t) => !preg_match('/[|…<]|_ \+ | \+ /', $t);     // genau ein festes Topic?
@@ -273,16 +288,16 @@ foreach ([['fronius/status/ok', '0/1', 'Alle Geräte liefern Werte oder sind nac
     echo '<tr><td>Status</td><td>' . h($w[0]) . '</td><td>' . h(str_replace('/', '_', $w[0])) . '</td><td>' . h($w[1]) . '</td><td>' . h($w[2]) . '</td><td>nein</td></tr>';
 }
 ?>
-</table>
+</table></div>
 <p class="hinweis">Beim Absturz des Dienstes setzt der Broker fronius/status/ok per Letzter-Wille-Nachricht auf 0 (retained). Das Plugin hat keine Befehle: Die Solar API ist nur lesend. Eine Kennzahl für Loxone, die nachts weiterhilft: <code>fronius/&lt;name&gt;/schlaeft</code> (1 = Wechselrichter abgeschaltet).</p>
 
 <?php } elseif ($tab === 'test') { ?>
 <h3>Test</h3>
-<form method="post" action="<?= $basis ?>test" data-ajax="false">
+<form method="post" action="<?= $basis ?>test">
 <input type="hidden" name="token" value="<?= h($token) ?>">
-<button type="submit" name="aktion" value="abruf" data-ajax="false">Sofort abrufen</button>
-<button type="submit" name="aktion" value="selbst" data-ajax="false">Selbstprüfung</button>
-<button type="submit" name="aktion" value="neustart" data-ajax="false">Dienst neu starten</button>
+<button class="lb-btn lb-btn-primary" type="submit" name="aktion" value="abruf">Sofort abrufen</button>
+<button class="lb-btn" type="submit" name="aktion" value="selbst">Selbstprüfung</button>
+<button class="lb-btn lb-btn-danger" type="submit" name="aktion" value="neustart">Dienst neu starten</button>
 </form>
 <?php
     $a = (string)($_POST['aktion'] ?? '');
@@ -318,17 +333,17 @@ foreach ([['fronius/status/ok', '0/1', 'Alle Geräte liefern Werte oder sind nac
                     $out += FroniusMapper::storage($d);
                 }
             }
-            echo '<table><tr><th>Topic</th><th>Wert</th></tr>';
+            echo '<div class="lb-table-scroll"><table class="lb-table"><tr><th>Topic</th><th>Wert</th></tr>';
             foreach ($out as $k => $v) {
                 echo '<tr><td>fronius/' . h($dev['alias'] . '/' . $k) . '</td><td>' . h($v) . '</td></tr>';
             }
-            echo '</table>';
+            echo '</table></div>';
         }
     } elseif ($a === 'selbst') {
         $zeile = function (string $name, bool $ok, string $text): void {
             echo '<tr><td>' . h($name) . '</td><td class="' . ($ok ? 'ok' : 'fehler') . '">' . ($ok ? 'OK' : 'Fehler') . '</td><td>' . h($text) . '</td></tr>';
         };
-        echo '<table><tr><th>Prüfung</th><th>Ergebnis</th><th>Details</th></tr>';
+        echo '<div class="lb-table-scroll"><table class="lb-table"><tr><th>Prüfung</th><th>Ergebnis</th><th>Details</th></tr>';
         $zeile('Konfiguration', count($geraete) > 0, count($geraete) . ' Wechselrichter konfiguriert');
         foreach ($geraete as $dev) {
             [$led, $tip] = FroniusClient::check($dev['host'], $dev['port']);
@@ -348,7 +363,7 @@ foreach ([['fronius/status/ok', '0/1', 'Alle Geräte liefern Werte oder sind nac
         $gw = GatewayInfo::subscription('fronius/#', GatewayInfo::general());
         $zeile('Gateway-Abo', $gw['state'] === 'ok', $gw['text']);
         $zeile('Dienst', $laeuft, $laeuft ? 'läuft, letzte Statusmeldung vor ' . $alter . ' s' : 'keine aktuelle Statusmeldung');
-        echo '</table>';
+        echo '</table></div>';
     }
 } elseif ($tab === 'logs') {
     echo '<h3>Logdateien</h3>';

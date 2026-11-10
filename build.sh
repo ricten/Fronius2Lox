@@ -14,6 +14,30 @@ fi
 for c in Util Logger MqttClient GatewayInfo; do
     [ -f "../common/php/$c.php" ] || { echo "../common/php/$c.php fehlt" >&2; exit 1; }
 done
+# release.cfg (Autoupdate): Hinweis, wenn sie auf eine andere Version zeigt als plugin.cfg
+if [ -f release.cfg ]; then
+    RCVER="$(grep '^VERSION=' release.cfg | cut -d= -f2 | tr -d '')"
+    [ "$RCVER" = "$VER" ] || echo "Hinweis: release.cfg zeigt auf $RCVER, plugin.cfg hat $VER (erst nach dem GitHub-Release mit 'bash build.sh release-cfg' aktualisieren)" >&2
+fi
+if [ "${1:-}" = "release-cfg" ]; then
+    # schreibt release.cfg (liegt im Repo, nicht im ZIP); erst nach dem GitHub-Release ausfuehren und pushen
+    cat > release.cfg <<EOT
+[AUTOUPDATE]
+# Autoupdate des LoxBerry: plugin.cfg verweist (RELEASECFG) auf diese Datei im Branch main.
+# Erst nach dem GitHub-Release aktualisieren (bash build.sh release-cfg), nie auf eine Version zeigen, deren ZIP noch fehlt.
+
+# Version des neuen Releases
+VERSION=$VER
+
+# Direkter Download des Plugin-ZIP
+ARCHIVEURL=https://github.com/ricten/Fronius2Lox/releases/download/v$VER/fronius2lox-$VER.zip
+
+# Seite mit Hinweisen zu diesem Release
+INFOURL=https://github.com/ricten/Fronius2Lox/releases/tag/v$VER
+EOT
+    echo "release.cfg geschrieben (Version $VER)"
+    exit 0
+fi
 PY="$(command -v python3 || command -v python)" || { echo "python noetig (ersetzt zip)" >&2; exit 1; }
 
 # Staging: Plugin + gemeinsamer Code
@@ -64,4 +88,7 @@ with zipfile.ZipFile(out, 'w', zipfile.ZIP_DEFLATED) as z:
         z.writestr(info, data)
 PYEOF
 rm -rf build
+# Zusaetzlich ein ZIP ohne Version im Namen: https://github.com/ricten/<Repo>/releases/latest/download/fronius2lox.zip zeigt dann immer auf das neueste Release
+cp -f "$OUT" "$PWD/fronius2lox.zip"
 echo "$OUT"
+echo "$PWD/fronius2lox.zip"

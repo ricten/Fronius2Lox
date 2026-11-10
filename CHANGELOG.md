@@ -8,6 +8,17 @@ Release-Ablauf: Version in `fronius2lox/plugin.cfg` und `fronius2lox/bin/lib/App
 
 ## [Unveröffentlicht]
 
+## [0.5.0] – 2026-11-10
+
+### Neu
+- **ZIP ohne Version im Namen** (`<name>.zip`) an jedem Release: `…/releases/latest/download/<name>.zip` zeigt immer auf das neueste Release (`bash build.sh` erzeugt beide ZIPs).
+- **Automatische Updates:** `plugin.cfg` verweist auf `release.cfg` im Repo (`AUTOMATIC_UPDATES=true`, `RELEASECFG`). Neue Installationen bekommen damit Release-Updates; bereits installierte Versionen erhalten den Verweis erst durch die Neuinstallation von 0.5.0. `bash build.sh release-cfg` schreibt `release.cfg` für die gebaute Version (erst nach dem GitHub-Release).
+
+### Geändert
+- Weboberfläche im **LoxBerry Design System** (`lb-*`-Klassen, `lbheader(…, true)`) statt jQuery Mobile: Schalter, Karten, Tabellen und Knöpfe im Stil der LoxBerry-Seiten, Farben folgen dem gewählten Theme (auch dunkel). Formularfelder, Feldnamen und Speichern sind unverändert.
+- Tests: Oberfläche prüft nojqm, `lb-content` und das Fehlen von jQuery-Mobile-Attributen.
+- Doku: Seitenlinks in `docs/wiki/` funktionieren im Repository (mit `.md`), Abschnitt „Automatische Updates“ in `Installation.md` und `README.md`.
+
 ## [0.4.0] – 2026-11-10
 
 ### Neu
