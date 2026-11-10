@@ -19,7 +19,7 @@ Zuerst im Plugin den Reiter **Test** öffnen: **Selbstprüfung** und **Sofort ab
 | `typ_name` leer | Der Gerätetyp (`DT`) steht nicht in der Typliste der Doku (neues Modell). `info/typ` zeigt die Nummer |
 | Fehlerprotokoll bleibt leer | GEN24 liefert kein Archiv (GetArchiveData). Beim Symo: Option „Fehler- und Ereignisprotokoll“ prüfen; Fronius verlangt 120 s Mindestabstand, das Plugin fragt alle 5 Minuten |
 | `zaehler/…` ohne Messwerte, nur `sichtbar` = 0 | Der Zähler meldet laut Doku unvollständige oder veraltete Werte; Zählerverbindung am Wechselrichter prüfen |
-| Keine `string_1_…`/`string_2_…` | Der Datenlogger liefert sie nur bei Symo/Primo/Hybrid (nicht GEN24) und nur, wenn die Option „Archiv“ an ist. Der Wert ist höchstens 45 Minuten alt; nach dem Aufwachen dauert es bis zum nächsten Aufzeichnungszeitpunkt (Raster 5–30 min). Echtzeitwerte: Modbus TCP, siehe [Konfiguration](Konfiguration) |
+| Keine `string_1_…`/`string_2_…` | Der Datenlogger liefert sie nur bei Symo/Primo/Hybrid (nicht GEN24) und nur, wenn die Option „Archiv“ an ist. Der Wert ist höchstens 45 Minuten alt; nach dem Aufwachen dauert es bis zum nächsten Aufzeichnungszeitpunkt (Raster 5–30 min). Echtzeitwerte: Modbus TCP, siehe [Konfiguration](Konfiguration.md) |
 | `modbus_ok` = 0 | Modbus TCP im Datamanager einschalten (Einstellungen → Modbus: tcp, int + SF, Port 502), Port im Plugin prüfen; der Grund steht im Log (z. B. „Modbus-Ausnahme 11“ = Wechselrichter antwortet nicht, Unit-ID) |
 | `wr/<Nr>/temperatur_umgebung_c`, Lüfterwerte fehlen | Die meisten Wechselrichter liefern diese Werte nicht (laut Doku nur wenige Modelle) |
 | Kein `zaehler/…` oder `speicher/…` | Option im Reiter Einstellungen aus, oder der Wechselrichter meldet das Gerät nicht |

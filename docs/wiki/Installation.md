@@ -7,7 +7,7 @@
 
 Test im Browser: `http://<IP-des-Wechselrichters>/solar_api/GetAPIVersion.cgi` muss JSON mit `APIVersion` liefern.
 
-**Symo und Primo (mit Datamanager):** Die Adresse ist die des Datamanagers (Steckkarte im Wechselrichter). Er bekommt seinen Strom vom Wechselrichter und ist nachts offline; das Plugin behandelt das als Normalfall (siehe [Konfiguration](Konfiguration), Nachtbetrieb). Am besten die IP des Datamanagers im Router fest vergeben.
+**Symo und Primo (mit Datamanager):** Die Adresse ist die des Datamanagers (Steckkarte im Wechselrichter). Er bekommt seinen Strom vom Wechselrichter und ist nachts offline; das Plugin behandelt das als Normalfall (siehe [Konfiguration](Konfiguration.md), Nachtbetrieb). Am besten die IP des Datamanagers im Router fest vergeben.
 
 ## ZIP bauen
 
@@ -22,7 +22,7 @@ Ergebnis: `fronius2lox-<version>.zip` (enthält nur den Inhalt von `fronius2lox/
 1. LoxBerry-Oberfläche → **Plugin-Verwaltung** → **Plugin installieren**.
 2. ZIP hochladen und installieren. Die Installation startet den Dienst.
 3. Plugin **Fronius2Lox** öffnen.
-4. IP des Wechselrichters eintragen, **Aktiv** anhaken, **Speichern** (siehe [Konfiguration](Konfiguration)). Das Kästchen vor der Zeile zeigt, ob der Wechselrichter erreichbar ist.
+4. IP des Wechselrichters eintragen, **Aktiv** anhaken, **Speichern** (siehe [Konfiguration](Konfiguration.md)). Das Kästchen vor der Zeile zeigt, ob der Wechselrichter erreichbar ist.
 5. Nach spätestens einem Abfrageintervall (Standard 10 s) erscheinen Werte unter `fronius/<name>/*` (im LoxBerry-MQTT-Finder prüfbar).
 
 ## Was die Installation einrichtet

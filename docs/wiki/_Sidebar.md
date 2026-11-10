@@ -1,9 +1,9 @@
 **Fronius2Lox**
 
-- [Start](Home)
-- [Installation](Installation)
-- [Konfiguration](Konfiguration)
-- [MQTT-Topics](MQTT-Topics)
-- [Loxone-Anbindung](Loxone-Anbindung)
-- [Fehlersuche](Fehlersuche)
-- [Entwicklung](Entwicklung)
+- [Start](Home.md)
+- [Installation](Installation.md)
+- [Konfiguration](Konfiguration.md)
+- [MQTT-Topics](MQTT-Topics.md)
+- [Loxone-Anbindung](Loxone-Anbindung.md)
+- [Fehlersuche](Fehlersuche.md)
+- [Entwicklung](Entwicklung.md)

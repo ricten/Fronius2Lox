@@ -44,7 +44,7 @@ Schema `fronius/<name>/<wert>`, `<name>` = Name des Wechselrichters aus den Eins
 | `fronius/status/zaehler` | Lebenszeichen 0–999, zählt je Durchgang |
 | `fronius/status/ts` | Zeitstempel des letzten Durchgangs |
 
-Im Nachtbetrieb (siehe [Konfiguration](Konfiguration)) setzt das Plugin außerdem `pv_w` = 0, `wr/<Nr>/leistung_ac_w` = 0 und `wr/<Nr>/status_text` = `Offline`.
+Im Nachtbetrieb (siehe [Konfiguration](Konfiguration.md)) setzt das Plugin außerdem `pv_w` = 0, `wr/<Nr>/leistung_ac_w` = 0 und `wr/<Nr>/status_text` = `Offline`.
 
 ## Wechselrichter `wr/<Nr>/…` (Option „Details je Wechselrichter“)
 

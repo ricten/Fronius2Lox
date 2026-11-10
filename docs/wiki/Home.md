@@ -23,12 +23,12 @@
 
 ## Seiten
 
-1. [Installation](Installation)
-2. [Konfiguration](Konfiguration)
-3. [MQTT-Topics](MQTT-Topics)
-4. [Loxone-Anbindung](Loxone-Anbindung)
-5. [Fehlersuche](Fehlersuche)
-6. [Entwicklung](Entwicklung)
+1. [Installation](Installation.md)
+2. [Konfiguration](Konfiguration.md)
+3. [MQTT-Topics](MQTT-Topics.md)
+4. [Loxone-Anbindung](Loxone-Anbindung.md)
+5. [Fehlersuche](Fehlersuche.md)
+6. [Entwicklung](Entwicklung.md)
 
 ## Voraussetzungen
 
