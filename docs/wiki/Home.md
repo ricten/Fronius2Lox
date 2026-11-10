@@ -1,6 +1,6 @@
 # Fronius2Lox
 
-![Logo](../logo/logo_loxberry.png)
+![Logo](../logo/fronius2lox.png)
 
 **Fronius2Lox** ist ein LoxBerry-Plugin, das die **Fronius Solar API** (Wechselrichter Gen24, Symo, Primo …) ausliest und die Werte an den MQTT-Broker des LoxBerry veröffentlicht.
 Über das LoxBerry-MQTT-Gateway gelangen sie an den Loxone Miniserver. Es ersetzt den ioBroker-Adapter `fronius`.
