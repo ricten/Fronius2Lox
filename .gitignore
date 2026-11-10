@@ -1,0 +1,7 @@
+*.zip
+build/
+*.log
+*.local.cfg
+
+# Testlaufzeit
+tests/tmp/
