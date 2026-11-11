@@ -33,7 +33,7 @@
 ## Voraussetzungen
 
 - LoxBerry ≥ 4.0 mit aktivem MQTT-Broker (Mosquitto) und MQTT-Gateway (oder eigener Broker)
-- PHP ≥ 8.2 (CLI + Web, ist bei LoxBerry 4 dabei)
+- PHP ≥ 8.2 (Kommandozeile und Web). Das hat LoxBerry 4.0 auf Debian 13 (Trixie); auf Debian 11 und 12 ist meist PHP 7.4 aktiv, dann zuerst die Debian-Version anheben ([Anleitung im LoxBerry-Wiki](https://wiki.loxberry.de/installation_von_loxberry/upgrade_distribution/start)). Die Installation prüft das und bricht sonst mit einem Hinweis ab
 - Ein Fronius-Wechselrichter im Netz mit **freigeschalteter Solar API** (bei Gen24 im Wechselrichter einzuschalten)
 
 ## Lizenz
