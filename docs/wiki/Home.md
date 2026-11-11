@@ -33,7 +33,7 @@
 ## Voraussetzungen
 
 - LoxBerry ≥ 4.0 mit aktivem MQTT-Broker (Mosquitto) und MQTT-Gateway (oder eigener Broker)
-- PHP ≥ 8.4 (CLI + Web, ist bei LoxBerry 4 dabei)
+- PHP ≥ 8.2 (CLI + Web, ist bei LoxBerry 4 dabei)
 - Ein Fronius-Wechselrichter im Netz mit **freigeschalteter Solar API** (bei Gen24 im Wechselrichter einzuschalten)
 
 ## Lizenz

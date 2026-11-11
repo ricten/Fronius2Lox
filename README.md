@@ -1,7 +1,7 @@
 # Fronius2Lox – LoxBerry-Plugin
 <img src="docs/logo/fronius2lox.png" alt="Fronius2Lox Logo" width="128">
 
-**Version 0.4.0** · Benötigt LoxBerry 4 (PHP ≥ 8.4) · [Changelog](CHANGELOG.md)
+**Version 0.5.1** · Benötigt LoxBerry 4 (PHP ≥ 8.2) · [Changelog](CHANGELOG.md)
 
 Dokumentation: [docs/wiki/Home.md](docs/wiki/Home.md)
 

@@ -114,7 +114,7 @@ final class FroniusModbus
 final class FroniusSunSpec
 {
     /** Moegliche Basisadressen (0-basiert): Fronius 40000, sonst laut SunSpec 0 oder 50000. */
-    private const array BASEN = [40000, 0, 50000];
+    private const BASEN = [40000, 0, 50000];
 
     /**
      * Adresse und Laenge eines SunSpec-Modells suchen (Kette aus "SunS", dann je Modell Kennung und Laenge).

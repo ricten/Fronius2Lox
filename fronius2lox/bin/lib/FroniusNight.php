@@ -11,7 +11,7 @@
 final class FroniusNight
 {
     /** Toleranz um Sonnenauf- und -untergang in Minuten (Wechselrichter startet/stoppt etwas versetzt). */
-    private const int TOLERANZ_MIN = 90;
+    private const TOLERANZ_MIN = 90;
 
     public static function expected(array $nacht, ?float $lastPv, int $now): bool
     {

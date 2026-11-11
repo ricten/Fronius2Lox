@@ -5,7 +5,7 @@
  */
 final class FroniusClient
 {
-    private const int TIMEOUT = 5;
+    private const TIMEOUT = 5;
     public string $error = '';
 
     public function __construct(private readonly string $host, private readonly int $port = 80)

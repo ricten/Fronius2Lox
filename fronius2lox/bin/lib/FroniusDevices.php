@@ -5,7 +5,7 @@
  */
 final class FroniusDevices
 {
-    public const array TYPEN = [
+    public const TYPEN = [
         1 => 'any Fronius GEN24/Tauro/Verto',
         42 => 'Symo Advanced 10.03M',
         43 => 'Symo Advanced 20.03M',

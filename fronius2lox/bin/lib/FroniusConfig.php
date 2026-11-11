@@ -2,9 +2,9 @@
 /** Konfiguration des Plugins (fronius.json, Rechte 0600). Die Solar API braucht keine Anmeldung, es gibt also keine Zugangsdaten ausser denen eines eigenen MQTT-Brokers. */
 final class FroniusConfig
 {
-    public const int MAX_GERAETE = 4;
+    public const MAX_GERAETE = 4;
     /** Ein/Aus-Optionen der Weboberflaeche (alle ausser rohwerte standardmaessig an). */
-    public const array OPTIONEN = ['wechselrichter', 'zaehler', 'speicher', 'weitere', 'logger', 'archiv', 'rohwerte'];
+    public const OPTIONEN = ['wechselrichter', 'zaehler', 'speicher', 'weitere', 'logger', 'archiv', 'rohwerte'];
 
     public static function defaultGeraet(string $alias = ''): array
     {
