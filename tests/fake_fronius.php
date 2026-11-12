@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../common/php/Util.php';    // Rueckfaelle fuer PHP 7.4 (str_contains usw.)
 /**
  * Fake-Fronius-Wechselrichter fuer Tests: php tests/fake_fronius.php <port> <verzeichnis>
  * Schreibt jede Anfrage (Pfad mit Query) nach <verzeichnis>/fro_<port>.log.

@@ -151,7 +151,7 @@ function pollDevice(array $dev, array $fro, MqttClient $mqtt, Logger $log): arra
 
     // Zusatzabfrage. Fehler sind nicht schlimm (nicht jedes Geraet kann alles). Wiederholt scheiternde Abfragen
     // werden zehn Minuten ausgesetzt, damit der Wechselrichter nicht mit sinnlosen Anfragen belastet wird.
-    $extra = function (string $name, string $path, array|string $params, callable $map, string $rawName, ?string $bodyKey = null) use ($c, $log, $alias, &$out, &$raw, &$st, $fro): ?array {
+    $extra = function (string $name, string $path, $params, callable $map, string $rawName, ?string $bodyKey = null) use ($c, $log, $alias, &$out, &$raw, &$st, $fro): ?array {
         if (($st['skip'][$name] ?? 0) > time()) {
             return null;
         }

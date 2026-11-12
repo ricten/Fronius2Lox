@@ -8,8 +8,13 @@ final class FroniusClient
     private const TIMEOUT = 5;
     public string $error = '';
 
-    public function __construct(private readonly string $host, private readonly int $port = 80)
+    private string $host;
+    private int $port;
+
+    public function __construct(string $host, int $port = 80)
     {
+        $this->host = $host;
+        $this->port = $port;
         // Der Verbindungsaufbau folgt default_socket_timeout (Standard 60 s): nachts ist der Datamanager offline,
         // ohne Begrenzung wuerde jede Abfrage den Dienst bis zu einer Minute blockieren.
         ini_set('default_socket_timeout', (string)self::TIMEOUT);
@@ -25,7 +30,7 @@ final class FroniusClient
      * @param string $path z. B. "v1/GetPowerFlowRealtimeData.fcgi" oder "GetAPIVersion.cgi"
      * @return array|null
      */
-    public function get(string $path, array|string $params = []): ?array
+    public function get(string $path, $params = []): ?array
     {
         $b = $this->body($path, $params);
         if ($b === null) {
@@ -39,7 +44,7 @@ final class FroniusClient
      * Wie get(), liefert aber den ganzen Body (z. B. GetLoggerInfo antwortet mit Body.LoggerInfo statt Body.Data).
      * Ein Fehlercode im Kopf (Head.Status.Code != 0) gilt als Fehler; Texte stehen im Fehlerfeld.
      */
-    public function body(string $path, array|string $params = []): ?array
+    public function body(string $path, $params = []): ?array
     {
         $r = $this->raw($path, $params);
         if ($r === null) {
@@ -58,7 +63,7 @@ final class FroniusClient
     }
 
     /** Antwort als Array (inkl. Head/Body) oder null. */
-    public function raw(string $path, array|string $params = []): ?array
+    public function raw(string $path, $params = []): ?array
     {
         $this->error = '';
         // $params als Text = fertige Query (z. B. wiederholte Parameter Channel=A&Channel=B bei GetArchiveData)

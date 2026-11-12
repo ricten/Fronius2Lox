@@ -15,8 +15,15 @@ final class FroniusModbus
     private $sock = null;
     private int $tid = 0;
 
-    public function __construct(private readonly string $host, private readonly int $port = 502, private readonly float $timeout = 3.0)
+    private string $host;
+    private int $port;
+    private float $timeout;
+
+    public function __construct(string $host, int $port = 502, float $timeout = 3.0)
     {
+        $this->host = $host;
+        $this->port = $port;
+        $this->timeout = $timeout;
     }
 
     public function close(): void
@@ -94,11 +101,8 @@ final class FroniusModbus
         $fn = ord($pdu[0]);
         if ($fn === 0x83) {
             $code = ord($pdu[1] ?? "\0");
-            $this->error = 'Modbus-Ausnahme ' . $code . match ($code) {
-                2 => ' (Adresse nicht vorhanden)',
-                11 => ' (Wechselrichter antwortet nicht, Unit-ID richtig?)',
-                default => '',
-            };
+            $zusatz = [2 => ' (Adresse nicht vorhanden)', 11 => ' (Wechselrichter antwortet nicht, Unit-ID richtig?)'];
+            $this->error = 'Modbus-Ausnahme ' . $code . ($zusatz[$code] ?? '');
             return null;
         }
         if ($fn !== 3 || strlen($pdu) < 2 || ord($pdu[1]) !== $count * 2 || strlen($pdu) !== 2 + $count * 2) {

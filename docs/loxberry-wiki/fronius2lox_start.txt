@@ -186,6 +186,7 @@ Weitere Hinweise: [[https://github.com/ricten/Fronius2Lox/blob/main/docs/wiki/Fe
 ===== 8. Changelog =====
 
 ^ Version ^ Änderung ^
+| 0.5.3 | Läuft auch mit PHP 7.4 (Debian 11/12); Installation verlangt mindestens PHP 7.4 (bisher 8.2) |
 | 0.5.2 | Installation und Update prüfen PHP 8.2 oder neuer und brechen sonst mit einer klaren Meldung ab (statt HTTP 500 in der Weboberfläche) |
 | 0.5.1 | Läuft auch mit PHP 8.2 und 8.3 (bisher PHP 8.4 nötig) |
 | 0.5.0 | Weboberfläche im LoxBerry Design System, automatische Updates (release.cfg), ZIP ohne Version für einen festen Download-Link |

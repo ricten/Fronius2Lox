@@ -13,7 +13,7 @@
 final class FroniusMapper
 {
     /** Zahl als Text mit Punkt, ohne Einheit und ohne ueberfluessige Nullen; null bei Nicht-Zahl. */
-    public static function num(mixed $v): ?string
+    public static function num($v): ?string
     {
         if (is_bool($v)) {
             return $v ? '1' : '0';
@@ -29,7 +29,7 @@ final class FroniusMapper
         return ($s === '' || $s === '-0') ? '0' : $s;
     }
 
-    private static function f(mixed $v): ?float
+    private static function f($v): ?float
     {
         if (!(is_int($v) || is_float($v) || (is_string($v) && is_numeric($v)))) {
             return null;
@@ -39,7 +39,7 @@ final class FroniusMapper
     }
 
     /** Text bereinigen (eine Zeile, begrenzt). */
-    private static function text(mixed $v): ?string
+    private static function text($v): ?string
     {
         if (!is_string($v)) {
             return null;
@@ -56,13 +56,13 @@ final class FroniusMapper
     }
 
     /** Zahl (oder 0/1 bei bool) unter $k ablegen, wenn $v eine ist. */
-    private static function putNum(array &$o, string $k, mixed $v): void
+    private static function putNum(array &$o, string $k, $v): void
     {
         self::put($o, $k, self::num(is_array($v) ? self::dv($v) : $v));
     }
 
     /** Wert aus {"Unit":"W","Value":123} (Geraete-Scope) bzw. {"Unit":..,"Values":{"1":123}}; kW/kWh werden zu W/Wh. */
-    private static function dv(mixed $x): ?float
+    private static function dv($x): ?float
     {
         if (!is_array($x)) {
             return self::f($x);
@@ -76,7 +76,7 @@ final class FroniusMapper
     }
 
     /** Ziffern-Kennung (Geraete-/Kanalnummer) oder null. */
-    private static function id(mixed $k): ?string
+    private static function id($k): ?string
     {
         $s = (string)$k;
         return preg_match('/^\d{1,10}$/', $s) ? $s : null;     // Komponenten-IDs (z. B. OhmPilot 720897) haben mehr Stellen
@@ -93,7 +93,7 @@ final class FroniusMapper
     }
 
     /** Kanal-Details (Hersteller, Modell, Seriennummer ...) als Text-Topics. */
-    private static function details(array &$o, string $prefix, mixed $det, array $names = ['Manufacturer' => 'hersteller', 'Model' => 'modell', 'Serial' => 'seriennummer']): void
+    private static function details(array &$o, string $prefix, $det, array $names = ['Manufacturer' => 'hersteller', 'Model' => 'modell', 'Serial' => 'seriennummer']): void
     {
         if (!is_array($det)) {
             return;
@@ -108,17 +108,11 @@ final class FroniusMapper
     /** Statuscode des Wechselrichters (Doku 4.6.5: 0-6 Startup, 7 Running, 8 Standby, 9 Bootloading, 10 Error, 11 Idle, 12 Ready, 13 Sleeping, 255 Unknown). */
     public static function statusText(int $code): string
     {
-        return match (true) {
-            $code === 7 => 'Betrieb',
-            $code === 8 => 'Standby',
-            $code === 9 => 'Bootloader',
-            $code === 10 => 'Fehler',
-            $code === 11 => 'Leerlauf',
-            $code === 12 => 'Bereit',
-            $code === 13 => 'Schlaeft',
-            $code >= 0 && $code <= 6 => 'Startet',
-            default => 'Unbekannt',
-        };
+        $texte = [7 => 'Betrieb', 8 => 'Standby', 9 => 'Bootloader', 10 => 'Fehler', 11 => 'Leerlauf', 12 => 'Bereit', 13 => 'Schlaeft'];
+        if (isset($texte[$code])) {
+            return $texte[$code];
+        }
+        return $code >= 0 && $code <= 6 ? 'Startet' : 'Unbekannt';
     }
 
     /**
@@ -127,14 +121,11 @@ final class FroniusMapper
      */
     public static function meterLocationText(int $loc): string
     {
-        return match (true) {
-            $loc === 0 => 'Netzuebergabe',
-            $loc === 1 => 'Verbrauchspfad',
-            $loc === 3 => 'Fremderzeuger',
-            $loc === 4 => 'Fremderzeuger mit Batterie',
-            $loc >= 256 && $loc <= 511 => 'Unterverbraucher',
-            default => 'Unbekannt',
-        };
+        $texte = [0 => 'Netzuebergabe', 1 => 'Verbrauchspfad', 3 => 'Fremderzeuger', 4 => 'Fremderzeuger mit Batterie'];
+        if (isset($texte[$loc])) {
+            return $texte[$loc];
+        }
+        return $loc >= 256 && $loc <= 511 ? 'Unterverbraucher' : 'Unbekannt';
     }
 
     /** OhmPilot CodeOfState (Doku 4.10.5). */
@@ -165,7 +156,7 @@ final class FroniusMapper
     }
 
     /** Typ des Geraets aus der Typliste der Doku (6.2). */
-    private static function typ(array &$o, string $prefix, mixed $dt): void
+    private static function typ(array &$o, string $prefix, $dt): void
     {
         $n = self::f($dt);
         if ($n !== null && $n >= 0) {
@@ -756,7 +747,7 @@ final class FroniusMapper
      * Alle Felder einer Antwort als Topics (Option "Rohwerte"): <prefix>/<pfad_in_kleinbuchstaben>.
      * @return array<string,string>
      */
-    public static function raw(string $prefix, mixed $data, int $depth = 0): array
+    public static function raw(string $prefix, $data, int $depth = 0): array
     {
         $o = [];
         if ($depth > 7 || !is_array($data)) {
